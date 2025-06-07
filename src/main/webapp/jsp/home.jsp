@@ -108,7 +108,7 @@
                 <div class="container-fluid">
                     <a class="navbar-brand" href="/">
                         <img src="/images/logo.png" alt="Your Company Logo" height="40" class="d-inline-block align-top">
-                        <span class="ms-2 h4">Agarwal Group Indore</span>
+                        <span class="ms-2 h4">Propify</span>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>

@@ -1,0 +1,568 @@
+:root {
+    --primary-blue: #0d6efd;
+    --purple-brand: #6f42c1;
+    --light-gray-bg: #f8f9fa;
+    --dark-text: #343a40;
+    --light-text: #6c757d;
+    --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    --hover-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-gray-bg);
+    padding-top: 0; /* Ensures content starts from the top, fixed nav padding will handle spacing */
+    min-height: 100vh; /* Make sure body takes full viewport height for footer to stick to bottom */
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Navbar Styles (Unified) --- */
+.navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+.navbar-brand img {
+    margin-right: 0.75rem;
+}
+.navbar-brand .text-primary {
+    color: var(--purple-brand) !important;
+    font-weight: 700;
+}
+.nav-link {
+    color: var(--dark-text) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+.nav-item.mx-2 { /* Apply margin consistently */
+    margin: 0 0.75rem !important; /* Adjusted for better spacing */
+}
+.nav-link:hover {
+    color: var(--purple-brand) !important;
+}
+.nav-link.text-warning { /* Logout button style */
+    color: #ffc107 !important;
+}
+.nav-link.text-warning:hover {
+    color: #e0a800 !important;
+}
+.navbar-toggler {
+    border-color: rgba(0,0,0,.1);
+}
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* --- General Page Header Styles --- */
+.page-header {
+    background: linear-gradient(135deg, var(--purple-brand), #8a5acd);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    box-shadow: var(--card-shadow);
+}
+.page-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: 0.05em;
+}
+.page-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* --- Filter Section (from buyProperty) --- */
+.filter-section {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 40px;
+}
+.filter-section .form-label {
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 8px;
+}
+.filter-section .form-control,
+.filter-section .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+.filter-section .btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.filter-section .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+.filter-section .btn-secondary {
+    background-color: var(--light-text);
+    border-color: var(--light-text);
+    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.filter-section .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* --- Property Listing Cards (from buyProperty, myProperties) --- */
+.property-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+    overflow: hidden; /* Ensures image corners are rounded */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    height: 100%; /* Make cards same height */
+    display: flex;
+    flex-direction: column;
+}
+.property-card:hover {
+    transform: translateY(-8px); /* Lift effect on hover */
+    box-shadow: var(--hover-shadow);
+}
+.property-card img {
+    width: 100%;
+    height: 220px; /* Fixed height for consistent card appearance */
+    object-fit: cover; /* Ensures image fills space without distortion */
+    border-bottom: 1px solid #eee;
+}
+.property-card .card-body {
+    padding: 25px;
+    flex-grow: 1; /* Allows card body to take remaining height */
+    display: flex;
+    flex-direction: column;
+}
+.property-card .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--purple-brand);
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+.property-card .card-text {
+    color: var(--light-text);
+    margin-bottom: 10px;
+    flex-grow: 1; /* Allows text to grow if multiline */
+}
+.property-card .property-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    color: var(--dark-text);
+}
+.property-card .property-meta i {
+    color: var(--primary-blue);
+    margin-right: 5px;
+}
+.property-card .property-price {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+}
+.property-card .btn-details {
+    background-color: var(--purple-brand);
+    border-color: var(--purple-brand);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.property-card .btn-details:hover {
+    background-color: #5936a3;
+    border-color: #5936a3;
+}
+.property-card .btn-danger { /* For delete button on myProperties */
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.property-card .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+.property-card .btn-info { /* For edit button on myProperties */
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.property-card .btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* No Properties Found Message (from buyProperty, myProperties) */
+.no-properties-found {
+    text-align: center;
+    padding: 50px 0;
+    color: var(--light-text);
+    font-size: 1.2rem;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 40px;
+}
+.no-properties-found i {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+
+/* --- Dashboard Card Styles (from dashboard) --- */
+.dashboard-card {
+    border: none;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+}
+.dashboard-card .card-body {
+    padding: 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.dashboard-card .card-title {
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+    color: var(--dark-text);
+}
+.dashboard-card .card-text {
+    color: var(--light-text);
+    font-size: 0.95rem;
+}
+.dashboard-card .btn {
+    margin-top: 1.25rem;
+    font-weight: 500;
+    padding: 0.65rem 1.75rem;
+}
+
+/* --- Index Page Hero/Search Bar Styles (from index) --- */
+.hero {
+    background-color: #607D8B; /* Example color, consider a background image or gradient */
+    padding: 80px 0;
+    color: white;
+    text-align: center;
+}
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.search-bar {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2rem;
+}
+.search-bar h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+.search-bar form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end; /* Align buttons/inputs at the bottom */
+}
+.search-bar .form-group {
+    flex: 1 1 180px;
+    margin-bottom: 0;
+}
+.search-bar label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #444;
+    font-weight: 500;
+}
+.search-bar select,
+.search-bar input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+.search-bar select:focus,
+.search-bar input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+.search-bar button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--primary-blue);
+    color: #fff;
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+.search-bar button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Login/Profile Card Styles (from login, profile) --- */
+.card.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+.card.rounded-3 {
+    border-radius: 0.75rem!important;
+}
+.card.rounded-4 {
+    border-radius: 1rem!important;
+}
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select:focus ~ label,
+.form-floating > .form-select:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    background-color: white; /* To prevent text from being obscured */
+    padding: 0 0.25rem;
+}
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
+}
+.form-floating > label {
+    padding: 1rem 0.75rem;
+    color: var(--light-text);
+}
+
+
+/* --- Property Details Specific Styles --- */
+.property-detail-container { /* Renamed for clarity, from .container */
+    max-width: 900px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+h2.page-title {
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+    text-align: center;
+}
+.property-img {
+    width: 100%;
+    max-height: 450px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    margin-bottom: 35px;
+    border: 1px solid #e9ecef;
+}
+.card-details-page { /* Renamed from .card for specificity */
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding: 35px;
+    background-color: #ffffff;
+    border: none;
+}
+.card-details-page p {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--dark-text);
+    display: flex;
+    align-items: baseline;
+    line-height: 1.4;
+}
+.card-details-page p strong {
+    color: var(--purple-brand);
+    min-width: 120px;
+    display: inline-block;
+    font-weight: 600;
+    margin-right: 15px;
+}
+.card-details-page p span {
+    flex-grow: 1;
+    color: var(--light-text);
+}
+.card-details-page p.property-description span {
+    display: block; /* Ensures description wraps naturally */
+    flex-grow: 1;
+    margin-top: 5px; /* Space between label and long description */
+}
+.contact-btn {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.contact-btn:hover {
+    background-color: #0a58ca;
+    border-color: #0a58ca;
+}
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+.feature-list li {
+    background-color: var(--light-gray-bg);
+    border-left: 5px solid var(--purple-brand);
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--dark-text);
+}
+.feature-list li i {
+    color: var(--primary-blue);
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* --- Footer Styles (Unified) --- */
+footer {
+    background-color: #343a40; /* Dark background */
+    color: #f8f9fa; /* Light text */
+    padding: 2.5rem 0 1.5rem; /* Adjusted padding */
+    margin-top: auto; /* Pushes footer to the bottom */
+}
+footer p {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #adb5bd;
+}
+footer strong {
+    color: #fff;
+}
+footer .footer-link {
+    color: #ced4da;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-size: 0.9rem;
+}
+footer .footer-link:hover {
+    color: var(--primary-blue);
+}
+footer .social-icons a {
+    color: #f8f9fa;
+    font-size: 1.3rem;
+    margin: 0 0.75rem;
+    transition: color 0.2s ease;
+}
+footer .social-icons a:hover {
+    color: var(--primary-blue);
+}
+
+
+/* --- Responsive Adjustments (Unified) --- */
+@media (max-width: 991px) { /* Medium devices and below */
+    .page-header h1 {
+        font-size: 2.8rem;
+    }
+    .page-header p {
+        font-size: 1rem;
+    }
+    .filter-section .col-md-3,
+    .filter-section .col-md-2 {
+        margin-bottom: 15px; /* Add space between stacked filter columns */
+    }
+    .filter-section .btn {
+        width: 100%; /* Full width buttons on smaller screens */
+    }
+    .filter-section .d-flex {
+        flex-direction: column; /* Stack filter buttons */
+    }
+    .search-bar form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-bar .form-group {
+        flex: 1 1 auto;
+    }
+    .search-bar button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767px) { /* Small devices and below */
+    .navbar-nav {
+        text-align: center;
+    }
+    .nav-item.mx-2 {
+        margin: 0.5rem 0 !important;
+    }
+    .page-header {
+        padding: 40px 0;
+        margin-bottom: 30px;
+    }
+    .page-header h1 {
+        font-size: 2.2rem;
+    }
+    .property-card .card-body {
+        padding: 20px;
+    }
+    .property-card .card-title {
+        font-size: 1.3rem;
+    }
+    .property-card .property-price {
+        font-size: 1.4rem;
+    }
+    .property-card .property-meta {
+        flex-direction: column; /* Stack meta info */
+        align-items: flex-start;
+    }
+    .property-card .property-meta div {
+        margin-bottom: 5px;
+    }
+    .card-details-page p {
+        flex-direction: column; /* Stack label and value */
+        align-items: flex-start;
+    }
+    .card-details-page p strong {
+        margin-bottom: 5px;
+    }
+}

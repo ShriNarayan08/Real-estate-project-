@@ -36,6 +36,15 @@ public class ViewController {
         return "profile";
     }
 
+    @GetMapping("/sell")
+    public String sellProperty()
+    {
+        return "sellProperty";
+    }
+
+
+
+
 
     // Registration and Login forms are now handled by AuthController's @GetMapping
     // but if you want direct access to them via a simple GET, you can keep these

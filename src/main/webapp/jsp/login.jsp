@@ -11,35 +11,38 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 </head>
 <body>
-    <header class="bg-white shadow-sm">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="/">
-                        <img src="/images/logo.png" alt="/images/logo.png" height="40" class="d-inline-block align-top">
-                        <span class="ms-2 h4">Agarwal Group Indore</span>
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link active" href="/home">Home</a>
-                            </li>
+   <header class="bg-white shadow-sm">
+     <nav class="navbar navbar-expand-lg navbar-light bg-white px-4">
+       <div class="container-fluid">
+         <!-- Logo -->
+         <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/">
+           <img src="${pageContext.request.contextPath}/images/logo2.png" alt="Propify Indore Logo" height="60" class="me-2">
+           <span class="fw-bold fs-4 text-primary">Propify Indore</span>
+         </a>
 
-                            <li class="nav-item">
-                                <a class="nav-link active" href="/regis">Register</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </header>
+         <!-- Mobile toggle -->
+         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+         </button>
+
+         <!-- Navbar links -->
+         <div class="collapse navbar-collapse" id="mainNavbar">
+           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+             <li class="nav-item">
+               <a class="nav-link" href="${pageContext.request.contextPath}/home">Home</a>
+             </li>
+             <li class="nav-item">
+               <a class="nav-link text-warning" href="${pageContext.request.contextPath}/regis">Register</a>
+             </li>
+           </ul>
+         </div>
+       </div>
+     </nav>
+   </header>
 
     <main class="container py-5">
         <div class="row justify-content-center">
@@ -64,9 +67,13 @@
                                 </label>
                             </div>
                             <button class="btn btn-primary w-100 py-2" type="submit">Log In</button>
-                            <div class="mt-4 text-center">
-                                <a href="/forgot-password" class="text-muted">Forgot your password?</a>
+
+                            <div class="mt-3 text-center">
+                                <p>Forgot your password? <a href="${pageContext.request.contextPath}/auth/forgot-password">Reset it here</a></p>
                                 <p>Don't have an account? <a href="/regis">Register here</a></p>
+                            </div>
+
+
                             </div>
                         </form>
                     </div>
@@ -77,7 +84,7 @@
 
     <footer class="bg-dark text-white py-4">
         <div class="container text-center">
-            <p>&copy; 2025 Agarwal Group Indore. All rights reserved.</p>
+            <p>&copy; 2025 Propify Indore. All rights reserved.</p>
             <div class="mt-2">
                 <a href="/privacy" class="text-white me-3">Privacy Policy</a>
                 <a href="/terms" class="text-white me-3">Terms of Service</a>

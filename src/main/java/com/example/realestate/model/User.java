@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false, length = 255) // Store hashed password, so use a large length
     private String password;
 
+    @Column
+    private String profileImage; // Make sure getter/setter are present
+
     @Column(nullable = false)
     private boolean enabled; // To indicate if user account is active
 
@@ -35,6 +38,10 @@ public class User {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt; // Timestamp for last update
+
+    private String otp;
+    private LocalDateTime otpExpiryTime;
+
 
     // Constructors
     public User() {
@@ -123,6 +130,30 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiryTime() {
+        return otpExpiryTime;
+    }
+
+    public void setOtpExpiryTime(LocalDateTime otpExpiryTime) {
+        this.otpExpiryTime = otpExpiryTime;
     }
 
     // Override equals and hashCode methods (Recommended for JPA Entities)

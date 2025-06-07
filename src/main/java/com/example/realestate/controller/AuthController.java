@@ -1,3 +1,4 @@
+// src/main/java/com/example/realestate/controller/AuthController.java
 package com.example.realestate.controller;
 
 import com.example.realestate.model.LoginRequest;
@@ -10,14 +11,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
 @Controller
-@RequestMapping("/auth")
+@RequestMapping("/auth") // Keep existing mapping
 public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    private static final String UPLOAD_DIR = "./uploads/";
+
+    // --- Existing methods (register, login, profile, updateProfile, changePassword) go here ---
+    // (Copied from previous response for completeness)
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -69,23 +83,17 @@ public class AuthController {
             return "login";
         }
 
-        try
-        {
+        try {
             User authenticatedUser = userService.login(request.getEmail(), request.getPassword());
-            if (authenticatedUser != null)
-            {
+            if (authenticatedUser != null) {
                 session.setAttribute("loggedInUser", authenticatedUser);
                 redirectAttributes.addFlashAttribute("welcomeMessage", "Welcome, " + authenticatedUser.getFirstName() + "!");
-                return "redirect:/auth/profile"; // Corrected path to match controller mapping
-//              return "redirect:/auth/dashboard"; // Corrected path to match controller mapping
-            }
-            else
-            {
+                return "redirect:/dashboard";
+            } else {
                 model.addAttribute("errorMessage", "Invalid email or password.");
                 return "login";
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             model.addAttribute("errorMessage", "An error occurred during login: " + e.getMessage());
             return "login";
         }
@@ -96,10 +104,17 @@ public class AuthController {
         User user = (User) session.getAttribute("loggedInUser");
 
         if (user == null) {
-            return "redirect:/auth/login"; // Corrected redirect path
+            return "redirect:/auth/login";
         }
 
-        model.addAttribute("userProfile", user);
+        User latestUser = userService.findUserById(user.getId());
+        if (latestUser != null) {
+            session.setAttribute("loggedInUser", latestUser);
+            model.addAttribute("userProfile", latestUser);
+        } else {
+            session.removeAttribute("loggedInUser");
+            return "redirect:/auth/login";
+        }
         return "profile";
     }
 
@@ -107,6 +122,7 @@ public class AuthController {
     public String updateProfile(
             @ModelAttribute("userProfile") User updatedUser,
             BindingResult result,
+            @RequestParam(value = "profileImageFile", required = false) MultipartFile file,
             Model model,
             RedirectAttributes redirectAttributes,
             HttpSession session) {
@@ -114,22 +130,49 @@ public class AuthController {
         User sessionUser = (User) session.getAttribute("loggedInUser");
 
         if (sessionUser == null) {
-            return "redirect:/auth/login"; // Corrected redirect path
+            return "redirect:/auth/login";
         }
 
         sessionUser.setFirstName(updatedUser.getFirstName());
         sessionUser.setLastName(updatedUser.getLastName());
         sessionUser.setEmail(updatedUser.getEmail());
-        sessionUser.setPhone(updatedUser.getPhone());
+        if (updatedUser.getPhone() != null && !updatedUser.getPhone().isEmpty()) {
+            sessionUser.setPhone(updatedUser.getPhone());
+        } else {
+            sessionUser.setPhone(null);
+        }
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                Path uploadPath = Paths.get(UPLOAD_DIR);
+                Files.createDirectories(uploadPath);
+
+                String originalFileName = file.getOriginalFilename();
+                String fileExtension = "";
+                int dotIndex = originalFileName.lastIndexOf('.');
+                if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+                    fileExtension = originalFileName.substring(dotIndex);
+                }
+                String fileName = UUID.randomUUID().toString() + fileExtension;
+                Path filePath = uploadPath.resolve(fileName);
+
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                sessionUser.setProfileImage(fileName);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("errorMessage", "Image upload failed: " + e.getMessage());
+                return "redirect:/auth/profile";
+            }
+        }
 
         userService.updateUser(sessionUser);
-
         session.setAttribute("loggedInUser", sessionUser);
-        redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully.");
 
+        redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully.");
         return "redirect:/auth/profile";
     }
-
 
     @PostMapping("/change-password")
     public String changePassword(HttpSession session,
@@ -154,20 +197,62 @@ public class AuthController {
         }
 
         user.setPassword(newPassword);
-        userService.updateUser(user);  // Make sure this saves password
+        userService.updateUser(user);
 
         redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully.");
         return "redirect:/auth/profile";
     }
 
-//    @GetMapping("/dashboard")
-//    public String dashboard(HttpSession session, Model model) {
-//        Object user = session.getAttribute("loggedInUser");
-//        if (user == null) {
-//            return "redirect:/auth/login";
-//        }
-//
-//        model.addAttribute("welcomeMessage", "Welcome to the dashboard!");
-//        return "dashboard"; // should match dashboard.jsp inside /WEB-INF/views/
-//    }
+    // --- NEW FORGOT PASSWORD ENDPOINTS ---
+
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordPage() {
+        return "forgot-password"; // This will map to forgot-password.jsp
+    }
+
+    @PostMapping("/forgot-password/request-otp")
+    @ResponseBody // This indicates that the method should return data directly, not a view name
+    public String requestOtp(@RequestParam String email) {
+        try {
+            User user = userService.findByEmail(email);
+            if (user == null) {
+                return "User with this email not found.";
+            }
+            userService.generateOtp(email);
+            return "OTP sent to your email successfully.";
+        } catch (Exception e) {
+            System.err.println("Error requesting OTP: " + e.getMessage());
+            return "Failed to send OTP. Please try again.";
+        }
+    }
+
+    @PostMapping("/forgot-password/verify-otp")
+    @ResponseBody
+    public String verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        try {
+            boolean isVerified = userService.verifyOtp(email, otp);
+            if (isVerified) {
+                return "OTP verified successfully.";
+            } else {
+                return "Invalid or expired OTP.";
+            }
+        } catch (Exception e) {
+            System.err.println("Error verifying OTP: " + e.getMessage());
+            return "Failed to verify OTP. Please try again.";
+        }
+    }
+
+    @PostMapping("/forgot-password/reset-password")
+    @ResponseBody
+    public String resetPassword(@RequestParam String email, @RequestParam String newPassword) {
+        try {
+            // It's crucial here that OTP verification has already happened
+            // and the frontend passes the 'email' for which the OTP was verified.
+            userService.resetPassword(email, newPassword);
+            return "Password reset successfully.";
+        } catch (Exception e) {
+            System.err.println("Error resetting password: " + e.getMessage());
+            return "Failed to reset password. Please try again.";
+        }
+    }
 }
