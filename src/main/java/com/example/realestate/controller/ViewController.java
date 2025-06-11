@@ -42,6 +42,13 @@ public class ViewController {
         return "sellProperty";
     }
 
+    @GetMapping("/contact")
+    public String addcontact()
+    {
+        return "contact";
+    }
+
+
 
 
 
