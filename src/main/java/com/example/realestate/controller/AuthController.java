@@ -1,4 +1,3 @@
-// src/main/java/com/example/realestate/controller/AuthController.java
 package com.example.realestate.controller;
 
 import com.example.realestate.model.LoginRequest;
@@ -22,16 +21,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/auth") // Keep existing mapping
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
     private UserService userService;
 
     private static final String UPLOAD_DIR = "./uploads/";
-
-    // --- Existing methods (register, login, profile, updateProfile, changePassword) go here ---
-    // (Copied from previous response for completeness)
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -85,14 +81,21 @@ public class AuthController {
 
         try {
             User authenticatedUser = userService.login(request.getEmail(), request.getPassword());
+
             if (authenticatedUser != null) {
                 session.setAttribute("loggedInUser", authenticatedUser);
-                redirectAttributes.addFlashAttribute("welcomeMessage", "Welcome, " + authenticatedUser.getFirstName() + "!");
+
+                redirectAttributes.addFlashAttribute(
+                        "welcomeMessage",
+                        "Welcome, " + authenticatedUser.getFirstName() + "!"
+                );
+
                 return "redirect:/dashboard";
-            } else {
-                model.addAttribute("errorMessage", "Invalid email or password.");
-                return "login";
             }
+
+            model.addAttribute("errorMessage", "Invalid email or password.");
+            return "login";
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", "An error occurred during login: " + e.getMessage());
             return "login";
@@ -101,6 +104,7 @@ public class AuthController {
 
     @GetMapping("/profile")
     public String showProfilePage(HttpSession session, Model model) {
+
         User user = (User) session.getAttribute("loggedInUser");
 
         if (user == null) {
@@ -108,6 +112,7 @@ public class AuthController {
         }
 
         User latestUser = userService.findUserById(user.getId());
+
         if (latestUser != null) {
             session.setAttribute("loggedInUser", latestUser);
             model.addAttribute("userProfile", latestUser);
@@ -115,6 +120,7 @@ public class AuthController {
             session.removeAttribute("loggedInUser");
             return "redirect:/auth/login";
         }
+
         return "profile";
     }
 
@@ -136,6 +142,7 @@ public class AuthController {
         sessionUser.setFirstName(updatedUser.getFirstName());
         sessionUser.setLastName(updatedUser.getLastName());
         sessionUser.setEmail(updatedUser.getEmail());
+
         if (updatedUser.getPhone() != null && !updatedUser.getPhone().isEmpty()) {
             sessionUser.setPhone(updatedUser.getPhone());
         } else {
@@ -143,16 +150,22 @@ public class AuthController {
         }
 
         if (file != null && !file.isEmpty()) {
+
             try {
                 Path uploadPath = Paths.get(UPLOAD_DIR);
                 Files.createDirectories(uploadPath);
 
                 String originalFileName = file.getOriginalFilename();
                 String fileExtension = "";
-                int dotIndex = originalFileName.lastIndexOf('.');
-                if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
-                    fileExtension = originalFileName.substring(dotIndex);
+
+                if (originalFileName != null) {
+                    int dotIndex = originalFileName.lastIndexOf('.');
+
+                    if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+                        fileExtension = originalFileName.substring(dotIndex);
+                    }
                 }
+
                 String fileName = UUID.randomUUID().toString() + fileExtension;
                 Path filePath = uploadPath.resolve(fileName);
 
@@ -171,6 +184,7 @@ public class AuthController {
         session.setAttribute("loggedInUser", sessionUser);
 
         redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully.");
+
         return "redirect:/auth/profile";
     }
 
@@ -180,6 +194,7 @@ public class AuthController {
                                  @RequestParam String newPassword,
                                  @RequestParam String confirmNewPassword,
                                  RedirectAttributes redirectAttributes) {
+
         User user = (User) session.getAttribute("loggedInUser");
 
         if (user == null) {
@@ -200,26 +215,52 @@ public class AuthController {
         userService.updateUser(user);
 
         redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully.");
+
         return "redirect:/auth/profile";
     }
 
-    // --- NEW FORGOT PASSWORD ENDPOINTS ---
+    @PostMapping("/delete-account")
+    public String deleteAccount(HttpSession session) {
+
+        User user = (User) session.getAttribute("loggedInUser");
+
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        userService.deleteUserById(user.getId());
+
+        session.invalidate();
+
+        return "redirect:/home";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/home";
+    }
 
     @GetMapping("/forgot-password")
     public String showForgotPasswordPage() {
-        return "forgot-password"; // This will map to forgot-password.jsp
+        return "forgot-password";
     }
 
     @PostMapping("/forgot-password/request-otp")
-    @ResponseBody // This indicates that the method should return data directly, not a view name
+    @ResponseBody
     public String requestOtp(@RequestParam String email) {
+
         try {
             User user = userService.findByEmail(email);
+
             if (user == null) {
                 return "User with this email not found.";
             }
+
             userService.generateOtp(email);
+
             return "OTP sent to your email successfully.";
+
         } catch (Exception e) {
             System.err.println("Error requesting OTP: " + e.getMessage());
             return "Failed to send OTP. Please try again.";
@@ -229,13 +270,16 @@ public class AuthController {
     @PostMapping("/forgot-password/verify-otp")
     @ResponseBody
     public String verifyOtp(@RequestParam String email, @RequestParam String otp) {
+
         try {
             boolean isVerified = userService.verifyOtp(email, otp);
+
             if (isVerified) {
                 return "OTP verified successfully.";
-            } else {
-                return "Invalid or expired OTP.";
             }
+
+            return "Invalid or expired OTP.";
+
         } catch (Exception e) {
             System.err.println("Error verifying OTP: " + e.getMessage());
             return "Failed to verify OTP. Please try again.";
@@ -244,12 +288,13 @@ public class AuthController {
 
     @PostMapping("/forgot-password/reset-password")
     @ResponseBody
-    public String resetPassword(@RequestParam String email, @RequestParam String newPassword) {
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String newPassword) {
+
         try {
-            // It's crucial here that OTP verification has already happened
-            // and the frontend passes the 'email' for which the OTP was verified.
             userService.resetPassword(email, newPassword);
             return "Password reset successfully.";
+
         } catch (Exception e) {
             System.err.println("Error resetting password: " + e.getMessage());
             return "Failed to reset password. Please try again.";

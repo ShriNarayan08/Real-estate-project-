@@ -1,61 +1,101 @@
-package com.example.realestate.controller; // Corrected package name
+package com.example.realestate.controller;
 
-//import ch.qos.logback.core.model.Model;
-import ch.qos.logback.core.model.Model;
-import com.example.realestate.model.User;
-import com.example.realestate.model.User;
+import com.example.realestate.repository.PropertyRepository;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class ViewController {
 
+    @Autowired
+    private PropertyRepository propertyRepository;
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/home")
-    public String home(){
+    public String home() {
         return "home";
     }
 
-    @GetMapping("/regis")
-    public String regis()
-    {
-        return "registration";
-    }
-
-    @GetMapping("/login")
-    public String login(){
-        return "login";
-    }
-
     @GetMapping("/dashboard")
-    public String showDashboard() {
-        return "dashboard"; // dashboard.jsp ko render karega
-    }
+    public String showDashboard(HttpSession session, Model model) {
 
-    @GetMapping("/profile")
-    public String showProfile(Model model) {
-        return "profile";
-    }
+        if(session.getAttribute("loggedInUser") == null){
+            return "redirect:/auth/login";
+        }
 
-    @GetMapping("/sell")
-    public String sellProperty()
-    {
-        return "sellProperty";
+        model.addAttribute(
+                "recentProperties",
+                propertyRepository.findTop3ByOrderByIdDesc()
+        );
+
+        return "dashboard";
     }
 
     @GetMapping("/contact")
-    public String addcontact()
-    {
+    public String contact() {
         return "contact";
     }
-
-
-
-
-
-
-    // Registration and Login forms are now handled by AuthController's @GetMapping
-    // but if you want direct access to them via a simple GET, you can keep these
-    // or remove them if AuthController's @GetMapping("/auth/register") and @GetMapping("/auth/login") are sufficient.
-    // For consistency with the AuthController's @RequestMapping("/auth"),
-    // it's better to link to /auth/register and /auth/login from your JSPs.
 }
+
+
+
+
+//package com.example.realestate.controller;
+//
+//import com.example.realestate.repository.PropertyRepository;
+//import jakarta.servlet.http.HttpSession;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.ui.Model;
+//import org.springframework.web.bind.annotation.GetMapping;
+//
+//@Controller
+//public class ViewController {
+//
+//    @Autowired
+//    private PropertyRepository propertyRepository;
+//
+//    @GetMapping("/")
+//    public String root() {
+//        return "redirect:/home";
+//    }
+//
+//    @GetMapping("/home")
+//    public String home() {
+//        return "home";
+//    }
+//
+//    @GetMapping("/regis")
+//    public String regis() {
+//        return "registration";
+//    }
+//
+//    @GetMapping("/login")
+//    public String login() {
+//        return "redirect:/auth/login";
+//    }
+//
+//    @GetMapping("/dashboard")
+//    public String showDashboard(HttpSession session, Model model) {
+//
+//        if(session.getAttribute("loggedInUser") == null){
+//            return "redirect:/auth/login";
+//        }
+//
+//        model.addAttribute("recentProperties", propertyRepository.findTop3ByOrderByIdDesc());
+//
+//        return "dashboard";
+//    }
+//
+//    @GetMapping("/contact")
+//    public String contact() {
+//        return "contact";
+//    }
+//}

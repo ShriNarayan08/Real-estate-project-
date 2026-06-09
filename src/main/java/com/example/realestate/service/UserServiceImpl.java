@@ -1,4 +1,3 @@
-// src/main/java/com/example/realestate/service/UserServiceImpl.java
 package com.example.realestate.service;
 
 import com.example.realestate.model.RegistrationRequest;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random; // For OTP generation
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,31 +16,42 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private EmailService emailService; // Inject the new EmailService
+    private EmailService emailService;
 
-    // Register a new user
     @Override
     public User registerUser(RegistrationRequest request) {
+
         User user = new User();
+
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // IMPORTANT: Hash this password!
+        user.setPassword(request.getPassword());
         user.setPhone(request.getPhone());
         user.setProfileImage("default-profile.png");
+
         return userRepository.save(user);
     }
 
-    // Login logic
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
     @Override
     public User login(String email, String password) {
+
         Optional<User> userOpt = userRepository.findByEmail(email);
+
         if (userOpt.isPresent()) {
+
             User user = userOpt.get();
-            if (user.getPassword().equals(password)) { // IMPORTANT: Compare hashed passwords!
+
+            if (user.getPassword().equals(password)) {
                 return user;
             }
         }
+
         return null;
     }
 
@@ -58,67 +67,90 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkPassword(User user, String rawPassword) {
-        return user.getPassword().equals(rawPassword); // Use password encoder for comparison
+        return user.getPassword().equals(rawPassword);
     }
 
     @Override
     public void updatePassword(User user, String newPassword) {
-        user.setPassword(newPassword); // Hash the new password before saving!
+
+        user.setPassword(newPassword);
+
         userRepository.save(user);
     }
 
     @Override
     public User findUserById(Long id) {
+
         Optional<User> userOptional = userRepository.findById(id);
+
         return userOptional.orElse(null);
     }
 
-    // --- NEW OTP METHODS IMPLEMENTATION ---
+    // OTP METHODS
+
     @Override
     public String generateOtp(String email) {
-        User user = findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("User not found for email: " + email);
-        }
 
-        String otp = String.format("%06d", new Random().nextInt(999999)); // 6-digit OTP
-        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(5); // OTP valid for 5 minutes
+        User user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() ->
+                        new RuntimeException("User not found for email: " + email));
+
+        String otp = String.format("%06d",
+                new java.util.Random().nextInt(1000000));
+
+        LocalDateTime expiryTime =
+                LocalDateTime.now().plusMinutes(5);
 
         user.setOtp(otp);
         user.setOtpExpiryTime(expiryTime);
-        userRepository.save(user); // Save OTP and expiry to user
 
-        // Send OTP via email
-        emailService.sendOtpEmail(email, otp);
+        userRepository.save(user);
+
+        emailService.sendOtpEmail(user.getEmail(), otp);
 
         return otp;
     }
 
     @Override
     public boolean verifyOtp(String email, String otp) {
-        User user = findByEmail(email);
-        if (user == null || user.getOtp() == null || user.getOtpExpiryTime() == null) {
-            return false; // User or OTP data not found
+
+        User user =
+                userRepository.findByEmail(email.toLowerCase())
+                        .orElse(null);
+
+        if (user == null
+                || user.getOtp() == null
+                || user.getOtpExpiryTime() == null) {
+
+            return false;
         }
 
-        if (user.getOtp().equals(otp) && user.getOtpExpiryTime().isAfter(LocalDateTime.now())) {
-            // OTP verified, clear OTP after successful verification to prevent reuse
+        if (user.getOtp().equals(otp)
+                && LocalDateTime.now().isBefore(user.getOtpExpiryTime())) {
+
             user.setOtp(null);
             user.setOtpExpiryTime(null);
+
             userRepository.save(user);
+
             return true;
         }
+
         return false;
     }
 
     @Override
     public void resetPassword(String email, String newPassword) {
+
         User user = findByEmail(email);
+
         if (user == null) {
-            throw new RuntimeException("User not found for email: " + email);
+            throw new RuntimeException(
+                    "User not found for email: " + email);
         }
-        user.setPassword(newPassword); // IMPORTANT: Hash the new password here!
+
+        user.setPassword(newPassword);
+
         userRepository.save(user);
     }
-    // --------------------------------------
 }

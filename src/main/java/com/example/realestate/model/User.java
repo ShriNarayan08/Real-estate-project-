@@ -1,58 +1,65 @@
-package com.example.realestate.model; // Corrected package name
+package com.example.realestate.model;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users") // Database table ka naam
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment primary key
-    private Long id; // Changed to Long for auto-increment
-
-    @Column(nullable = false, length = 50) // NOT NULL, maximum length 50
-    private String firstName; // Corresponds to name in your previous User, but better as firstName
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, length = 50)
-    private String lastName; // Added for consistency with RegistrationRequest
+    private String firstName;
 
-    @Column(nullable = false, unique = true, length = 100) // NOT NULL, UNIQUE, max length 100
-    private String email; // Corresponds to userName in your previous User, but better as email
+    @Column(nullable = false, length = 50)
+    private String lastName;
 
-    @Column(length = 12) // Phone number field, length 20
-    private String phone; // Added for consistency with RegistrationRequest
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
 
-    @Column(nullable = false, length = 255) // Store hashed password, so use a large length
+    @Column(length = 20)
+    private String phone;
+
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Column
-    private String profileImage; // Make sure getter/setter are present
+    private String profileImage;
 
     @Column(nullable = false)
-    private boolean enabled; // To indicate if user account is active
+    private boolean enabled;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt; // Timestamp for creation
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt; // Timestamp for last update
+    private LocalDateTime updatedAt;
 
     private String otp;
+
     private LocalDateTime otpExpiryTime;
 
-
-    // Constructors
     public User() {
-        this.enabled = true; // Default to true
+
+        this.enabled = true;
+
         this.createdAt = LocalDateTime.now();
+
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Constructor for registration (password will be hashed by service)
-    public User(String firstName, String lastName, String email, String phone, String password) {
-        this(); // Call default constructor to set default values
+    public User(String firstName,
+                String lastName,
+                String email,
+                String phone,
+                String password) {
+
+        this();
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -60,7 +67,8 @@ public class User {
         this.password = password;
     }
 
-    // Getters and Setters
+    // GETTERS & SETTERS
+
     public Long getId() {
         return id;
     }
@@ -96,6 +104,7 @@ public class User {
     public String getPhone() {
         return phone;
     }
+
     public void setPhone(String phone) {
         this.phone = phone;
     }
@@ -106,6 +115,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public boolean isEnabled() {
@@ -132,14 +149,6 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
     public String getOtp() {
         return otp;
     }
@@ -156,12 +165,15 @@ public class User {
         this.otpExpiryTime = otpExpiryTime;
     }
 
-    // Override equals and hashCode methods (Recommended for JPA Entities)
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
+
         if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
+
         return id != null && id.equals(user.id);
     }
 
@@ -170,18 +182,15 @@ public class User {
         return getClass().hashCode();
     }
 
-    // Override toString method (Optional, for debugging)
     @Override
     public String toString() {
+
         return "User{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", enabled=" + enabled +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

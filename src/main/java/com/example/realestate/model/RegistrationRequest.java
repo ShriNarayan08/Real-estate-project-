@@ -1,6 +1,5 @@
 package com.example.realestate.model;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -21,24 +20,29 @@ public class RegistrationRequest {
     private String email;
 
     @Size(max = 20, message = "Phone number cannot exceed 20 characters")
-    private String phone; // Optional field
+    private String phone;
 
     @NotEmpty(message = "Password is required")
-    @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
+    @Size(min = 8, max = 255,
+            message = "Password must be between 8 and 255 characters")
     private String password;
 
     @NotEmpty(message = "Password confirmation is required")
     private String confirmPassword;
 
-    private boolean terms; // To check if user agreed to terms
+    private boolean terms;
 
-    public RegistrationRequest()
-    {
+    public RegistrationRequest() {
     }
 
-    // Getters and setters
+    public RegistrationRequest(String firstName,
+                               String lastName,
+                               String email,
+                               String phone,
+                               String password,
+                               String confirmPassword,
+                               boolean terms) {
 
-    public RegistrationRequest(String firstName, String lastName, String email, String phone, String password, String confirmPassword, boolean terms) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -48,6 +52,7 @@ public class RegistrationRequest {
         this.terms = terms;
     }
 
+    // GETTERS & SETTERS
 
     public String getFirstName() {
         return firstName;
